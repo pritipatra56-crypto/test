@@ -1,0 +1,35 @@
+package com.example.testapplication
+import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+class RecyclerViewActivity : AppCompatActivity() {
+
+    private lateinit var friendRecyclerView: RecyclerView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_recycler_view)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+        friendRecyclerView = findViewById(R.id.friendRecyclerView)
+        val friendlist = listOf(
+            Friend(name = "Babai Babai", time = "1h", mutual = "7 mutual friends"),
+            Friend(name = "Itz Sandip", time = "5h", mutual = "12 mutual friends"),
+            Friend(name = "Mangal Ruhidas", time = "6h", mutual = "21 mutual friends"),
+            Friend(name = "Priya Barman", time = "6h", mutual = "10 mutual friends"),
+            Friend(name = "Anubab Ghosh", time = "8h", mutual = "5 mutual friends"),
+            Friend(name = "Rohon Maity", time = "12h", mutual = "9 mutual friends"),
+            Friend(name = "Utpol Roy", time = "15h", mutual = "18 mutual friends")
+        )
+        friendRecyclerView.layoutManager = LinearLayoutManager(this)
+        friendRecyclerView.adapter = FriendAdapter(friendlist)
+    }
+}

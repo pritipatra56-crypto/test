@@ -1,0 +1,7 @@
+package com.example.testapplication
+
+data class Friend(
+    val name: String,
+    val time: String,
+    val mutual: String
+)
