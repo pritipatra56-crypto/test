@@ -1,0 +1,176 @@
+package com.example.testapplication
+
+import android.annotation.SuppressLint
+import android.os.Bundle
+import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+
+class CalculatorActivity : AppCompatActivity() {
+
+    private lateinit var Expression: TextView
+
+    @SuppressLint("MissingInflatedId")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_calculator)
+
+        val mainView = findViewById<android.view.View>(R.id.main)
+
+        ViewCompat.setOnApplyWindowInsetsListener(mainView) { _, insets ->
+            val systemBars =
+                insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            mainView.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom
+            )
+
+            insets
+        }
+
+        Expression = findViewById(R.id.final_ans_text)
+
+        val btn0 = findViewById<CardView>(R.id.btn0)
+        val btn1 = findViewById<CardView>(R.id.btn1)
+        val btn2 = findViewById<CardView>(R.id.btn2)
+        val btn3 = findViewById<CardView>(R.id.btn3)
+        val btn4 = findViewById<CardView>(R.id.btn4)
+        val btn5 = findViewById<CardView>(R.id.btn5)
+        val btn6 = findViewById<CardView>(R.id.btn6)
+        val btn7 = findViewById<CardView>(R.id.btn7)
+        val btn8 = findViewById<CardView>(R.id.btn8)
+        val btn9 = findViewById<CardView>(R.id.btn9)
+        val btnDot = findViewById<CardView>(R.id.btnDot)
+
+        val btnPlus = findViewById<CardView>(R.id.btnPlus)
+        val btnMinus = findViewById<CardView>(R.id.btnMinus)
+        val btnMultiply = findViewById<CardView>(R.id.btnMultiply)
+        val btnDivide = findViewById<CardView>(R.id.btnDivide)
+        val btnPercent = findViewById<CardView>(R.id.btnPercent)
+
+        val btnAC = findViewById<CardView>(R.id.btnAC)
+        val btnDelete = findViewById<CardView>(R.id.btnDelete)
+        val btnEqual = findViewById<CardView>(R.id.btnEqual)
+
+        btn0.setOnClickListener { appendToExpression("0") }
+        btn1.setOnClickListener { appendToExpression("1") }
+        btn2.setOnClickListener { appendToExpression("2") }
+        btn3.setOnClickListener { appendToExpression("3") }
+        btn4.setOnClickListener { appendToExpression("4") }
+        btn5.setOnClickListener { appendToExpression("5") }
+        btn6.setOnClickListener { appendToExpression("6") }
+        btn7.setOnClickListener { appendToExpression("7") }
+        btn8.setOnClickListener { appendToExpression("8") }
+        btn9.setOnClickListener { appendToExpression("9") }
+        btnDot.setOnClickListener { appendToExpression(".") }
+
+        btnPlus.setOnClickListener { appendToExpression("+") }
+        btnMinus.setOnClickListener { appendToExpression("-") }
+        btnMultiply.setOnClickListener { appendToExpression("×") }
+        btnDivide.setOnClickListener { appendToExpression("÷") }
+        btnPercent.setOnClickListener { appendToExpression("%") }
+
+        btnAC.setOnClickListener {
+            Expression.text = "0"
+        }
+
+        btnDelete.setOnClickListener {
+            val currentText = Expression.text.toString()
+
+            if (currentText.length > 1) {
+                Expression.text = currentText.dropLast(1)
+            } else {
+                Expression.text = "0"
+            }
+        }
+
+        btnEqual.setOnClickListener {
+            calculateResult()
+        }
+    }
+
+    private fun appendToExpression(value: String) {
+
+        val currentText = Expression.text.toString()
+
+        if (currentText == "0") {
+            Expression.text = value
+        } else {
+            Expression.append(value)
+        }
+    }
+
+    private fun calculateResult() {
+
+        val expressionText = Expression.text.toString()
+
+        try {
+
+            var sum = 0.0
+            var currentNumber = ""
+            var currentOperator = '+'
+
+            for (i in expressionText.indices) {
+
+                val char = expressionText[i]
+
+                if (char.isDigit() || char == '.') {
+
+                    currentNumber += char
+
+                } else {
+
+                    if (currentNumber.isNotEmpty()) {
+
+                        val num = currentNumber.toDouble()
+
+                        when (currentOperator) {
+
+                            '+' -> sum += num
+                            '-' -> sum -= num
+                            '×' -> sum *= num
+                            '÷' -> sum /= num
+                            '%' -> sum = (sum * num) / 100.0
+                        }
+
+                        currentNumber = ""
+                    }
+
+                    currentOperator = char
+                }
+
+                if (i == expressionText.lastIndex &&
+                    currentNumber.isNotEmpty()
+                ) {
+
+                    val num = currentNumber.toDouble()
+
+                    when (currentOperator) {
+
+                        '+' -> sum += num
+                        '-' -> sum -= num
+                        '×' -> sum *= num
+                        '÷' -> sum /= num
+                        '%' -> sum = (sum * num) / 100.0
+                    }
+                }
+            }
+
+            val resultString =
+                if (sum % 1.0 == 0.0) {
+                    sum.toLong().toString()
+                } else {
+                    sum.toString()
+                }
+
+            Expression.text = resultString
+
+        } catch (e: Exception) {
+
+            Expression.text = "Error"
+        }
+    }
+}
